@@ -12,17 +12,18 @@ namespace Dodger
 {
     class DodgeBall
     {
-        Texture2D texture; 
-        Rectangle position;
-        Rectangle startingPosition;
-        Random rand;
+        Texture2D texture; // Texture of balls
+        Rectangle position; // position of the balls
+        Rectangle startingPosition; // Starting position of the balls
+        Random rand; // Random number used to generate random X cooridinate and velocity
         public Rectangle Position { get { return position; } }
+        
         int velocity;
 
         public DodgeBall() 
         {
             rand = new Random();
-            velocity = rand.Next(5,10);
+            velocity = rand.Next(5,20);
             SetStartingPosition();
         }
 
@@ -39,7 +40,15 @@ namespace Dodger
 
         public void Draw(SpriteBatch sb) 
         {
-            sb.Draw(texture, position, Color.Blue);
+            if (velocity > 7)
+            {
+                sb.Draw(texture, position, Color.Green);
+            }
+            if (velocity <= 7)
+            {
+                sb.Draw(texture, position, Color.Blue);
+            }
+
         }
 
         public void Update(GameTime gameTime) 
