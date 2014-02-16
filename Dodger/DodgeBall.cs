@@ -23,7 +23,7 @@ namespace Dodger
         public DodgeBall() 
         {
             rand = new Random();
-            velocity = rand.Next(5,20);
+            velocity = rand.Next(5,15);
             SetStartingPosition();
         }
 

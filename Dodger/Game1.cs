@@ -136,7 +136,7 @@ namespace Dodger
             if (timer <= 0)
             {
                 timer = 20000; //reset the timer
-                if (balls.Count != 100) //only create balls if there are not 50 already on the screen
+                if (balls.Count != 75) //only create balls if there are not 50 already on the screen
                 {
                     DodgeBall ball = new DodgeBall();
                     ball.LoadDodgeBallContent(Content);
