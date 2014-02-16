@@ -11,13 +11,17 @@ using Microsoft.Xna.Framework.GamerServices;
 
 namespace Dodger
 {
-    /// <summary>
-    /// This is the main type for your game
-    /// </summary>
     public class Game1 : Game
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
+        const int GAME_WINDOW_WIDTH = 800;
+        const int GAME_WINDOW_HEIGHT = 600;
+
+        double timer = 5000;
+        Player player;
+
+        List<DodgeBall> balls;
 
         public Game1()
             : base()
@@ -26,64 +30,85 @@ namespace Dodger
             Content.RootDirectory = "Content";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content.  Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            graphics.PreferredBackBufferHeight = GAME_WINDOW_HEIGHT;
+            graphics.PreferredBackBufferWidth = GAME_WINDOW_WIDTH;
+            this.IsMouseVisible = false; // Hide the mouse
 
+            player = new Player();
+            balls = new List<DodgeBall>();
+            DodgeBall ball = new DodgeBall();
             base.Initialize();
         }
 
-        /// <summary>
-        /// LoadContent will be called once per game and is the place to load
-        /// all of your content.
-        /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
+            player.LoadPlayerContent(Content);
 
-            // TODO: use this.Content to load your game content here
+            foreach (DodgeBall n in balls) 
+            {
+                n.LoadDodgeBallContent(Content);
+            }
         }
 
-        /// <summary>
-        /// UnloadContent will be called once per game and is the place to unload
-        /// all content.
-        /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
         }
 
-        /// <summary>
-        /// Allows the game to run logic such as updating the world,
-        /// checking for collisions, gathering input, and playing audio.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            // TODO: Add your update logic here
+            timer -= gameTime.TotalGameTime.TotalMilliseconds; //timer 
+
+            if (timer <= 0)
+            {
+                timer = 20000; //reset the timer
+                if (balls.Count != 50) //only create balls if there are not 50 already on the screen
+                {
+                    DodgeBall ball = new DodgeBall();
+                    ball.LoadDodgeBallContent(Content);
+                    balls.Add(ball);
+                }
+            }
+
+
+            for (int i = 0; i < balls.Count; i++)          
+            {
+                if (balls[i].Position.Y > 820) 
+                {
+                    balls.Remove(balls[i]); //remove the balls from the list if they are off the screen
+                }
+            }
+            
+            Input.Update(); // Update the mouse
+            player.Update(); // Update the player
+            foreach (DodgeBall n in balls) // Update all the balls
+            {
+                n.Update(gameTime);
+            }
+
 
             base.Update(gameTime);
         }
 
-        /// <summary>
-        /// This is called when the game should draw itself.
-        /// </summary>
-        /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+            spriteBatch.Begin();
+            player.Draw(spriteBatch);
+            foreach (DodgeBall n in balls)
+            {
+                if (n.isTextureNull() == false)
+                {
+                    n.Draw(spriteBatch);
+                }
+            }
 
-            // TODO: Add your drawing code here
+            spriteBatch.End();
 
             base.Draw(gameTime);
         }
